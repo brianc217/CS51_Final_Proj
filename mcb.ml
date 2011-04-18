@@ -46,17 +46,25 @@ struct
       None
   let member (d:dict) (k:key) : bool = 
     M.mem k d
+
+(* Reads in text files and stores each word in a list of words. Doesn't
+   work though. There are technical issues *) 
   let read (file: string) : string list =
     let channel = open_in file in
     let list = [] in
     let word = "" in
-    try (match input_char channel with
-	   | ' ' -> word::list; word = ""
-	   | x -> word ^ x; 
-) 
-    with
-      | End_of_file -> list
-  ;;
+    let rec helper (lst: string list) =
+      try ( 
+        let x = Char.code (input_char channel) in
+        if (x = 32) then
+	  (word::lst)
+	else  
+	  ((word ^ (String.make 1 (Char.chr x))); (helper lst)) 
+	) 
+      with
+        | End_of_file -> lst in
+    helper list
+;;  
 
   let normalize (d:dict) : dict =
 
