@@ -25,6 +25,32 @@ struct
     match d with
       | [] -> [(k,v)]
       | _ -> 
+  
+  let normalize (d:dict) : dict =
+
+  let rec make_dict (t:token list) (d:dict) : dict =
+    match t with
+      | [] -> d
+      | h1::h2::h3::tl -> if (member d (h1,h2)) then 
+	  let v = 
+	    match (lookup d (h1,h2)) with
+	    | None -> _
+	    | Some a -> a
+	  in
+	  let rec findnewvalue (v:value) = 
+	    match v with
+	     | [] -> (h3,1)::value
+	     | (word,prob)::tl -> if word = h3 then
+		(word,prob + 1)::tl
+	       else 
+		findnewvalue tl
+	  in let newvalue = findnewvalue v in
+	  make_dict (h2::h3::tl) (insert d (h1,h2) newvalue)
+	else
+	  make_dict (h2::h3::tl) (insert d (h1,h2) [(h3,1)])
+
+  let babble (k:key) (d:dict) : string =
+
 end
 
 module 
