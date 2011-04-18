@@ -46,8 +46,17 @@ struct
       None
   let member (d:dict) (k:key) : bool = 
     M.mem k d
-  let read (file: 'a) : token list =
-
+  let read (file: string) : string list =
+    let channel = open_in file in
+    let list = [] in
+    let word = "" in
+    try (match input_char channel with
+	   | ' ' -> word::list; word = ""
+	   | x -> word ^ x; 
+) 
+    with
+      | End_of_file -> list
+  ;;
 
   let normalize (d:dict) : dict =
 
