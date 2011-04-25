@@ -1,11 +1,10 @@
-module type MCB = 
+module MCB : 
 sig
   type token
   type key   
   type value 
   type dict
   val empty : dict 
-  val insert : dict -> key -> value -> dict
   val lookup : dict -> key -> value option
   val member : dict -> key -> bool
   val read : 'a -> token list
@@ -16,17 +15,31 @@ end
 
 module MCB_imp : MCB
 struct
-  type token = string;;
-  type key = (token*token);;
-  type value = (token*float) list;;
-  type dict = (key*value) list;;
-  let empty = [];;
-  let rec insert (d:dict) (k:key) (v:value) : dict = 
-    match d with
-      | [] -> [(k,v)]
-      | _ -> 
+  type token = string
+  type key = (token*token)
+  type value = (token*float) list
+  type dict = (key*value) list
+  let empty = []
   
-  let normalize (d:dict) : dict =
+let lookup (d:dict) (k:key) : value option = Some []
+let member k:key = false
+let read (file: string) : token list =
+    let channel = open_in file in
+    (* Parse.program Lex.separate (Lexing.from_channel channel) *)
+    
+    let rec helper (word:token) (list:token list) : token list =
+      let char = try Some(input_char channel) with End_of_file -> None in
+      match char with
+	| Some c -> 
+	    begin
+	    match c with 
+	      | ' ' -> helper "" (word::list)
+	      | c -> helper (word^ String.make 1 c) list 
+	    end
+        | None -> list in
+    helper "" [] 
+
+let normalize (d:dict) : dict = []
 
   let rec make_dict (t:token list) (d:dict) : dict =
     match t with
@@ -49,11 +62,15 @@ struct
 	else
 	  make_dict (h2::h3::tl) (insert d (h1,h2) [(h3,1)])
 
-  let babble (k:key) (d:dict) : string =
+ let babble (k:key) (d:dict) : string = ""
 
-end
 
-module 
+end 
+
+(* let babble (k:key) (d:dict) : string =*)
+
+
+(*module 
 struct
   module M = Map.make(
     struct
@@ -72,33 +89,16 @@ struct
       None
   let member (d:dict) (k:key) : bool = 
     M.mem k d
-
-(* Reads in text files and stores each word in a list of words. Doesn't
-   work though. There are technical issues *) 
-  let read (file: string) : string list =
-    let channel = open_in file in
-    let list = [] in
-    let word = "" in
-    let rec helper (lst: string list) =
-      try ( 
-        let x = Char.code (input_char channel) in
-        if (x = 32) then
-	  (word::lst)
-	else  
-	  ((word ^ (String.make 1 (Char.chr x))); (helper lst)) 
-	) 
-      with
-        | End_of_file -> lst in
-    helper list
-;;  
-
-  let normalize (d:dict) : dict =
+*)
+(* Reads in text files and stores each word in a list of words. Bugs:Returns
+   reversed list and doesn't include last word *) 
+  
 
 
-  let make_dict (t:token list) : dict =
+ (* let normalize (d:dict) : dict =
 
 
-  let babble (k:key) (d:dict) : string =
+  let make_dict (t:token list) : dict = *)
 
 
-end
+ 
