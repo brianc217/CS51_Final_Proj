@@ -1,13 +1,14 @@
 (* Signature for Markov Chain Babbler *)
-module MCB : 
+module type MCB = 
 sig
   type key   
   type value 
   type dict
   val empty : dict 
+  val insert : dict -> key -> value -> dict
   val lookup : dict -> key -> value option
   val member : dict -> key -> bool
-  val read : 'a -> string list
+  val read : string -> string list
   val normalize : dict -> dict
   val make_dict: string list -> dict
   val babble: key -> dict -> string
@@ -18,7 +19,6 @@ end
 module MCB_imp : (MCB with type key = (token * token)
 with type value = (token * float) list) = 
 struct
-  open Order;;
   type token = string ;;
   type key = (token * token);;
   type value = (token * float) list;;
@@ -80,8 +80,6 @@ module Map_MCB : (MCB with type key = (string * string)
 with type value = (string * float) list) =  
 struct
 
-  open Order
-
   module M = Map.Make(
     struct
       type t = (string * string)
@@ -95,6 +93,7 @@ struct
   type value = (string * float)list 
   type dict = (string*float)list M.t 
   let empty = M.empty 
+  let insert (d:dict) (k:key) (v:value) : dict = M.empty
   let lookup (d:dict) (k:key) : value option =
     try
       Some (M.find k d)
