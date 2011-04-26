@@ -1,58 +1,51 @@
+(* Function that reads each line of a file into a list *)
+let read_file filename = 
+  let lines = ref [] in
+  let chan = open_in filename in
+    try
+      while true; do
+	lines := input_line chan :: !lines
+      done; []
+    with End_of_file ->
+      close_in chan;
+      List.rev !lines ;;
 
-(* list of adjectives *)
-(* list of adverbs *)
-(* list of verbs *)
-(* list of nouns *)
-(* list of dets *) 
-(* list of proper nouns *)
-(* list of be verbs *)
-(* all of the above lists will be read in from a text file *)
+(* Load all the words *)
+let nouns = Array.of_list (read_file "noun.txt")
+let adjs = Array.of_list (read_file "adj.txt")
+let advs = Array.of_list (read_file "adv.txt")
+let verbs = Array.of_list (read_file "verb.txt")
+let dets = Array.of_list (read_file "det.txt") 
+let subs = Array.of_list (read_file "subject.txt")
+let be = Array.of_list (read_file "be.txt")
 
 (* concat takes a list of strings and turns it into one string *)
 let rec concat (l:string list) : string =
   match l with
+    | h::[] -> h
     | h::t -> h ^ " " ^ (concat t)
     | [] -> ""
 
-(* this first random element function works with string list *)
-let randomelement1 l =
-  let rec helper l n =
-    match l with
-      | h::t -> if n = 0 then h else helper t (n-1)
-      | [] -> raise (Failure "random number error")
-  in
-  let n = Random.int (List.length l) in
-    helper l n;;
 
-(* this second random element function works with the lists of string lists*)
-let randomelement2 l =
-  let rec helper l n =
-    match l with
-      | h::t -> if n = 0 then h else helper t (n-1)
-      | [] -> raise (Failure "random number error")
-  in
-  let n = Random.int (List.length l) in
-    helper l n;;
+(* Returns a random element on a list *)
+let randomelement l =
+  List.nth l (Random.int (List.length l))
 
-(* 
-   in the end, adj () and all the other functions will be random elements of 
-   the list of words that will be defined at the top of the file. also, more
-   possible definitions of sentences will be added.
-*)
+(* Returns a string of a random sentence! *)
 let randomsentence () =
-    let adj () = randomelement1(["smart"; "brown"; "smelly"; "wonderful"]) in
-    let adv () = randomelement1(["slowly"; "angrily"]) in
-    let verb () = randomelement1(["runs"; "eats"; "eats"; "bites"; "breaks"]) in
-    let noun () = randomelement1(["house"; "computer"; "phone"; "dog"; "stick"])
-    in
-    let det () = randomelement1(["a"; "the"; "that"; "this"; "your"]) in
-    let pn () = randomelement1(["the President"; "Mario"; "Travis"; "Meng Xiao"; "Brian"; "Heath"]) in
-    let be () = randomelement1(["is"]) in
-    let v () = concat(randomelement2([[adv(); verb()]; [verb()]])) in
-    let n () = concat(randomelement2([[adj(); noun()]; [noun()]])) in
-    let np () = concat(randomelement2([[pn()];[det(); n()]])) in
-    let vp () = concat(randomelement2([[v(); np()]; [be(); adj()]; [v()]])) in
-    let sentence () = concat(randomelement2([[np();vp()]])) in
-      sentence ()
+    let adj () = Array.get adjs (Random.int (Array.length adjs)) in
+    let adv () = Array.get advs (Random.int (Array.length advs)) in
+    let verb () = Array.get verbs (Random.int (Array.length verbs)) in
+    let noun () = Array.get nouns (Random.int (Array.length nouns)) in
+    let det () = Array.get dets (Random.int (Array.length dets)) in
+    let sub () = Array.get subs (Random.int (Array.length subs)) in
+    let be () = Array.get be (Random.int (Array.length be)) in
+    let v () = concat(randomelement([[adv(); verb()]; [verb()]])) in
+    let n () = concat(randomelement([[adj(); noun()]; [noun()]])) in
+    let np () = concat(randomelement([[sub()];[det(); n()]])) in
+    let vp () = concat(randomelement([[v(); np()]; [be(); adj()]; [v()]])) in
+    let punctuation () = randomelement["!"; "."; "?"; ","] in
+      concat(randomelement([[np(); vp(); punctuation ()]]))
 ;;
+
 (* Run randomsentence() to get a random sentence! *)
