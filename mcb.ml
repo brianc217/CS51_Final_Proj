@@ -9,7 +9,6 @@ sig
   val lookup : dict -> key -> value option
   val member : dict -> key -> bool
   val read : string -> string list
-  val normalize : dict -> dict
   val make_dict: string list -> dict
   val babble: key -> dict -> string
 end
@@ -77,30 +76,35 @@ end
 
 (* Map implementation of MCB *)
 module Map_MCB : (MCB with type key = (string * string) 
-with type value = (string * float) list) =  
+with type value = (string list)) =  
 struct
 
   module M = Map.Make(
     struct
       type t = (string * string)
       let compare x y = let x = match x with
-	  | (a,b) -> a in
+	  | (a,b) -> a^b in
         let y = match y with
-	  | (a,b) -> a in
+	  | (a,b) -> a^b in
 	String.compare x y
     end) 
-  type key = (string * string) 
-  type value = (string * float)list 
-  type dict = (string*float)list M.t 
-  let empty = M.empty 
-  let insert (d:dict) (k:key) (v:value) : dict = M.empty
+  type key = (string * string);; 
+  type value = (string list) ;;
+  type dict = value M.t ;;
+  let empty = M.empty ;;
+
   let lookup (d:dict) (k:key) : value option =
     try
       Some (M.find k d)
     with Not_found ->
-      None
+      None;;
+
+  let insert (d:dict) (k:key) (v:value) : dict = 
+    match (lookup d k) with
+      | Some l -> M.add k (l@v) d  
+      | None -> M.add k v d;;
   
-  let member (d:dict) (k:key) : bool = M.mem k d 
+  let member (d) (k:key) : bool = M.mem k d ;;
   
   let read (file:string) : string list =
     let channel = open_in file in   
@@ -110,14 +114,33 @@ struct
 	| Some c -> 
 	    begin
 	    match c with 
-	      | ' ' -> helper "" (word::list)
+	      | ' ' -> helper "" (list@[word])
+	      | '.' -> helper "" (list@[word]@["."])
 	      | c -> helper (word^ String.make 1 c) list 
 	    end
         | None -> list in
-    helper "" [] 
+    helper "" [] ;;
 
-  let normalize (d:dict) : dict = M.empty
-  let make_dict (list:string list) : dict = M.empty
-  let babble (k:key) (d:dict) : string = ""
+  let make_dict (list:string list) : dict = 
+    let dict = empty in
+    let rec helper list dict =
+      match list with
+        | hd1::hd2::hd3::tl -> helper (hd2::hd3::tl) 
+	    (insert dict (hd1,hd2) [hd3])
+        | hd1::hd2::tl -> insert dict (hd1,hd2) tl
+	| [] -> dict in
+      helper list dict
+;;
+  let babble (k:key) (d:dict)(s:string) : string = 
+    let (a,b) = k in
+    let randomelement l = 
+      List.nth l (Random.int(List.length l)) in
+    let values = match (lookup d k) with
+      |Some l -> l
+      |None -> [""] in 
+    let next = randomelement values in 
+      if (next = ".") then (s ^ ".") 
+      else (babble (b,next) d (s ^ " " ^ next))
+;;
 end
   
