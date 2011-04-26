@@ -118,6 +118,5 @@ struct
 
   let normalize (d:dict) : dict = M.empty
   let make_dict (list:string list) : dict = M.empty
-  let babble (k:key) (d:dict) : string = "";;
-
+  let babble (k:key) (d:dict) : string = ""
 end
