@@ -146,8 +146,9 @@ struct
 =======
   let normalize (d:dict) : dict = M.empty
   let make_dict (list:string list) : dict = M.empty
-  let babble (k:key) (d:dict) : string = 
+  let babble (k:key) (d:dict) : string = "";;
 
+<<<<<<< HEAD
 >>>>>>> f1a8488b261d34c9a70fc3c7488e94324f944448
 end
   
@@ -162,3 +163,6 @@ let rec babble k d s =
     else babble (b,next) (s ^ " " ^ next)
 ;;
 *)
+=======
+end
+>>>>>>> 0986ba369dd290f44855272c960273bef79f2271
