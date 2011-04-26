@@ -118,6 +118,18 @@ struct
 
   let normalize (d:dict) : dict = M.empty
   let make_dict (list:string list) : dict = M.empty
-  let babble (k:key) (d:dict) : string = ""
+  let babble (k:key) (d:dict) : string = 
+
 end
   
+(* here's babble
+let rec babble k d s =
+  let (a,b) = k in
+  let randomelement l =
+    List.nth l (Random.int (List.length l)) in
+  let values = lookup d k in
+  let next = randomelement values in
+    if (next = ".") then s
+    else babble (b,next) (s ^ " " ^ next)
+;;
+*)
