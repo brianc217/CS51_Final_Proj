@@ -13,67 +13,6 @@ sig
   val babble: key -> dict -> string
 end
 
-(*
-(* List implementation of MCB *)
-module MCB_imp : (MCB with type key = (token * token)
-with type value = (token * float) list) = 
-struct
-  type token = string ;;
-  type key = (token * token);;
-  type value = (token * float) list;;
-  type dict = (key * value) list;;
-  let empty = [] ;;
-  
-let lookup (d:dict) (k:key) : value option = 
-  try (Some(List.find ((=) k) d)) with Not_found -> None ;;
-let member (d:dict) (k:key) : bool = List.mem k d ;;
-
-(* Reads in text files and stores each word in a list of words. Bugs:Returns
-   reversed list and doesn't include last word *)
-let read (file:string) : token list =
-    let channel = open_in file in   
-    let rec helper (word:token) (list:token list) : token list =
-      let char = try Some(input_char channel) with End_of_file -> None in
-      match char with
-	| Some c -> 
-	    begin
-	    match c with 
-	      | ' ' -> helper "" (word::list)
-	      | c -> helper (word^ String.make 1 c) list 
-	    end
-        | None -> list in
-    helper "" [] 
-;;
-
-let normalize (d:dict) : dict = []
-;;
-
-  let rec make_dict (t:token list) (d:dict) : dict =
-    match t with
-      | [] -> d
-      | h1::h2::h3::tl ->  
-	  let v = 
-	    match (lookup d (h1,h2)) with
-	    | None -> make_dict (h2::h3::tl) (insert d (h1,h2) [(h3,1)])
-	    | Some a -> a
-	  in
-	  let rec findnewvalue (v:value) = 
-	    match v with
-	     | [] -> (h3,1)::value
-	     | (word,prob)::tl -> if word = h3 then
-		(word,prob + 1)::tl
-	       else 
-		findnewvalue tl
-	  in let newvalue = findnewvalue v in
-	  make_dict (h2::h3::tl) (insert d (h1,h2) newvalue)
-;;
-
-  let babble (k:key) (d:dict) : string = "" ;;
-
-
-end 
-*)
-
 (* Map implementation of MCB *)
 module Map_MCB : (MCB with type key = (string * string) 
 with type value = (string list)) =  
