@@ -121,7 +121,6 @@ struct
         | None -> list in
     helper "" [] ;;
 
-<<<<<<< HEAD
   let make_dict (list:string list) : dict = 
     let dict = empty in
     let rec helper list dict =
@@ -143,31 +142,4 @@ struct
       if (next = ".") then (s ^ ".") 
       else (babble (b,next) d (s ^ " " ^ next))
 ;;
-=======
-  let normalize (d:dict) : dict = M.empty
-  let make_dict (list:string list) : dict = M.empty
-<<<<<<< HEAD
-  let babble (k:key) (d:dict) : string = "";;
-
-<<<<<<< HEAD
->>>>>>> f1a8488b261d34c9a70fc3c7488e94324f944448
 end
-  
-(* here's babble
-let rec babble k d s =
-  let (a,b) = k in
-  let randomelement l =
-    List.nth l (Random.int (List.length l)) in
-  let values = lookup d k in
-  let next = randomelement values in
-    if (next = ".") then s
-    else babble (b,next) (s ^ " " ^ next)
-;;
-*)
-=======
-end
->>>>>>> 0986ba369dd290f44855272c960273bef79f2271
-=======
-  let babble (k:key) (d:dict) : string = ""
-end
->>>>>>> f687f208d54d1c81482c15dd5f8592357ef14c68
