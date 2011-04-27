@@ -10,7 +10,7 @@ sig
   val member : dict -> key -> bool
   val read : string -> string list
   val make_dict: string list -> dict
-  val babble: key -> dict -> string
+  val babble: key -> dict -> string -> string
 end
 
 (* Map implementation of MCB *)
@@ -44,7 +44,7 @@ struct
       | None -> M.add k v d;;
   
   let member (d) (k:key) : bool = M.mem k d ;;
-  
+  (* bugs: double space, punctuation, newline *)
   let read (file:string) : string list =
     let channel = open_in file in   
     let rec helper (word:string) (list:string list) : string list =
@@ -53,7 +53,11 @@ struct
 	| Some c -> 
 	    begin
 	    match c with 
-	      | ' ' -> helper "" (list@[word])
+	      | ' ' | '\n' | '\r' -> match word with
+		  begin
+		  | "" -> helper "" list
+		  | word -> helper "" (list@[word])
+		  end
 	      | '.' -> helper "" (list@[word]@["."])
 	      | c -> helper (word^ String.make 1 c) list 
 	    end
@@ -70,7 +74,8 @@ struct
 	| [] -> dict in
       helper list dict
 ;;
-  let babble (k:key) (d:dict)(s:string) : string = 
+  let rec babble (k:key) (d:dict) s : string = 
+    
     let (a,b) = k in
     let randomelement l = 
       List.nth l (Random.int(List.length l)) in
