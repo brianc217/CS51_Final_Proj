@@ -1,0 +1,7 @@
+
+%{
+open Ast
+%}
+
+%start program
+
