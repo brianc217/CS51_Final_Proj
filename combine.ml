@@ -38,13 +38,47 @@ struct
 	close_in chan;
 	List.rev !lines ;; 
   let make_dict l =
-    let rec helper (l:string list) (d:dict) =
+    let rec helper l d =
       match l with
-	| a::b::t ->( match b with
-			| "APPGE" -> helper t (insert d a [b])
-			| "AT" | "AT1" -> helper t (insert d a [b])
-			| "BCL" -> helper t (insert d a [b])
-			| "CC" | "CCB" | "" -> helper t (insert d a [b]))
+	| a::b::t ->(
+	    match (String.uppercase b) with
+	      | "APPGE" -> helper t (insert d a 
+				       ["possesive pronoun, pre-nominal"])
+	      | "AT" | "AT1" -> helper t (insert d a ["article"])
+	      | "BCL" -> helper t (insert d a ["before-clause marker"])
+	      | "CC" | "CCB" | "CS" | "CSA" | "CSN" | "CST" | "CSW" -> 
+		  helper t (insert d a ["conjunction"])
+	      | "DA" | "DA1" | "DA2" | "DAR" | "DAT" | "DB" | "DB2" | "DD" | 
+		    "DD1" | "DD2" | "DDQ" | "DDQGE" | "DDQV" -> 
+		  helper t (insert d a ["determiner"])
+	      | "EX" -> helper t (insert d a ["existential there"])
+	      | "FO" -> helper t (insert d a ["formula"])
+	      | "FU" | "FW" -> helper t d
+	      | "GE" -> helper t (insert d a ["germanic genitive marker"])
+	      | "IF" | "II" | "IO" | "IW" -> helper t 
+		  (insert d a ["preposition"])
+	      | "JJ" | "JJR" | "JJT" | "MC" | "MC1" | "MCMC" | "MD" | ""-> 
+		  helper t (insert d a ["adjective"])
+	      | "MC2"|"MCGE"|"MF"|"ND1"|"NN"|"NN1"|"NN2"|"NNA"|"NNB"|"NNL1"|
+		    "NNL2"|"NNO"|"NNO2"|"NNT1"|"NNT2"|"NNU"|"NNU1"|"NNU2"|"NP"|
+			"NP1"|"NP2"|"NPD1"|"NPD2"|"NPM1"|"NPM2"
+			  -> helper t (insert d a ["noun"])
+	      | "PN"|"PN1"|"PNQO"|"PNQS"|"PNQV"|"PNX1"|"PPGE"|"PPH1"|"PPHO1"|
+		    "PPHO2"|"PPHS1"|"PPHS2"|"PPIO1"|"PPIO2"|"PPIS1"|"PPIS2"|
+			"PPX"|"PPX2"|"PPY" -> helper t (insert d a ["pronoun"])
+	      | "RA"|"REX"|"RG"|"RGQ"|"RGQV"|"RGR"|"RGT"|"RL"|"RP"|"RPK"|"RR"|
+		    "RRQ"|"RRQV"|"RRR"|"RRT"|"RT "-> helper t 
+		  (insert d a ["adverb"])
+	      | "TO" -> helper t (insert d a ["infinitive marker"])
+	      | "UH" -> helper t (insert d a ["interjection"])
+	      | "VB0"|"VBDR"|"VBDZ"|"VBG"|"VBI"|"VBM"|"VBN"|"VBR"|"VBZ"
+		    -> helper t (insert d a ["be"])
+	      | "VD0"|"VDD"|"VDG"|"VDI"|"VDN"|"VDZ"|"VH0"|"VHD"|"VHG"|"VHI"|
+		    "VHN"|"VHZ"|"VV0"|"VVD"|"VVG"|"VVGK"|"VVI"|"VVN"|"VVNK"|
+			"VVZ"|"VM"|"VMK" -> helper t (insert d a ["verb"])
+	      | "XX" -> helper t (insert d a ["not"])
+	      | "ZZ1"|"ZZ2" -> helper t (insert d a ["letter"])
+	      | anything_else -> helper t d)
 	| [] -> d
 	| _::[] -> raise (Failure "error in part of speech file")
     in helper l empty

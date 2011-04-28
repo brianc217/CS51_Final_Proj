@@ -65,6 +65,22 @@ struct
         | None -> list in
     helper "" [] ;;
 
+  let key_list (lst:string list) : (string*string) list = 
+    let rec helper (lst:string list) (tklst: (string*string) list) :
+	(string*string) list = 
+      match lst with
+	| h1::h2::h3::tl -> if List.mem (h1,h2) tklst then
+	    helper (h2::h3::tl) tklst
+	  else
+	    helper (h2::tl) ((h1,h2)::tklst)
+	| h1::h2::tl -> if List.mem (h1,h2) tklst then tklst
+	  else (h1,h2)::tklst
+	| [] -> []
+    in helper lst []
+;;
+  let key_array (lst: (string*string) list) : (string*string) array =
+    Array.of_list lst
+;;
   let make_dict (list:string list) : dict = 
     let dict = empty in
     let rec helper list dict =
