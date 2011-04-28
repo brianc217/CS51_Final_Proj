@@ -83,3 +83,11 @@ struct
 	| _::[] -> raise (Failure "error in part of speech file")
     in helper l empty
 end
+
+let randomsentence () =
+  let v () = randomelement([["adv"; "verb"]; ["verb"]]) in
+  let n () = randomelement([["adj"; "noun"]; ["noun"]]) in
+  let np () = randomelement([["sub"];["det"] @ n()]) in
+  let prepphrase () = randomelement([["prep"] @ n()]) in
+  let vp () = randomelement([v() @ np(); ["be"]@["adj"]; v()]) in
+      flatten(randomelement([[np() @ vp()]; [np() @ vp() @ prepphrase()]]));;
