@@ -81,6 +81,16 @@ struct
     in helper l empty
 end
 
+(* A helper function that will flatten a list *)
+let rec flatten l : 'a list =
+  match l with
+    | h::t -> h @ (flatten t)
+    | [] -> []
+
+(* A helper function that picks a random element from a list *)
+let randomelement (l:'a list) : 'a =
+  List.nth l (Random.int (List.length l))
+
 let randomsentence() =
   let v () = randomelement([["adv"; "verb"]; ["verb"]]) in
   let n () = randomelement([["adj"; "noun"]; ["noun"]]) in
