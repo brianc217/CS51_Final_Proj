@@ -1,7 +1,4 @@
-open Grammar;;
 open MCB;;
-
-let pslist = randomsentence();;
 
 module type DICT = 
 sig
@@ -84,10 +81,46 @@ struct
     in helper l empty
 end
 
-let randomsentence () =
+let randomsentence() =
   let v () = randomelement([["adv"; "verb"]; ["verb"]]) in
   let n () = randomelement([["adj"; "noun"]; ["noun"]]) in
   let np () = randomelement([["sub"];["det"] @ n()]) in
   let prepphrase () = randomelement([["prep"] @ n()]) in
   let vp () = randomelement([v() @ np(); ["be"]@["adj"]; v()]) in
       flatten(randomelement([[np() @ vp()]; [np() @ vp() @ prepphrase()]]));;
+
+let poslist = randomsentence();;
+
+
+let babble (tokens:(string*string)array) (markov) (dict) =
+  let poslist = randomsentence() in
+  
+  let rec find_token tokens dict poslist =
+    let token = Array.get tokens(Random.int(Array.length tokens)) in
+    let (a,b) = token in
+      if ((PoS.lookup dict a) = (List.nth poslist 0) && 
+	  (PoS.lookup dict b) = (List.nth poslist 1)) then token
+      else find_token tokens dict poslist in
+          
+  let helper key markov dict poslist sent =
+    let (a,b) = (find_token tokens dict poslist) in
+    let rec helper2 key markov dict poslist sent int =
+      let (a,b) = key in
+      let values = match (MCB.lookup dict key) with
+	| None -> [""]
+	| Some l -> l in
+      let rec iterate list = 
+	match list with
+	  | hd::tl -> if (PoS.lookup dict hd) = (List.nth poslist int) then 
+	      hd else iterate tl
+	  | [] -> "." in
+      let next = iterate values in
+      if (next = ".") then (sent ^ ".")
+      else (helper2 (b,next) markov dict poslist (sent^" "^next) (int+1)) in
+    a ^ " " ^ b ^ (helper2 key markov dict poslist sent 0) in
+    
+    let token = (find_token tokens dict poslist) in
+    helper token markov dict poslist ""
+;;
+      
+    
