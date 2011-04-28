@@ -102,7 +102,7 @@ let randomsentence() =
 let poslist = randomsentence();;
 
 
-let babble (tokens:(string*string)array) (markov) (dict) =
+let babble (tokens:(PoS.key*PoS.key)array) (markov:MCB.dict) (dict:PoS.dict) =
   let poslist = randomsentence() in
   
   let rec find_token tokens dict poslist =
