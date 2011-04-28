@@ -1,5 +1,5 @@
 (* Signature for Markov Chain Babbler *)
-module type MCB = 
+module type DICT = 
 sig
   type key   
   type value 
@@ -10,11 +10,11 @@ sig
   val member : dict -> key -> bool
   val read : string -> string list
   val make_dict: string list -> dict
-  val babble: key -> dict -> string -> string
+  val babble: key -> dict -> string
 end
 
 (* Map implementation of MCB *)
-module Map_MCB : (MCB with type key = (string * string) 
+module MCB : (DICT with type key = (string * string) 
 with type value = (string list)) =  
 struct
 
@@ -53,11 +53,12 @@ struct
 	| Some c -> 
 	    begin
 	    match c with 
-	      | ' ' | '\n' | '\r' -> match word with
-		  begin
-		  | "" -> helper "" list
-		  | word -> helper "" (list@[word])
-		  end
+	      | ' ' | '\n' | '\r' -> 
+		  (begin 
+		     match word with
+		       | "" -> helper "" list
+		       | word -> helper "" (list@[word])
+		  end)
 	      | '.' -> helper "" (list@[word]@["."])
 	      | c -> helper (word^ String.make 1 c) list 
 	    end
@@ -74,16 +75,19 @@ struct
 	| [] -> dict in
       helper list dict
 ;;
-  let rec babble (k:key) (d:dict) s : string = 
-    
+  let rec babble (k:key) (d:dict) : string = 
     let (a,b) = k in
-    let randomelement l = 
-      List.nth l (Random.int(List.length l)) in
-    let values = match (lookup d k) with
-      |Some l -> l
-      |None -> [""] in 
-    let next = randomelement values in 
-      if (next = ".") then (s ^ ".") 
-      else (babble (b,next) d (s ^ " " ^ next))
+    let rec helper (k:key) (d:dict) (s:string) : string =
+      let (a,b) = k in
+      let randomelement l = 
+        List.nth l (Random.int(List.length l)) in
+      let values = match (lookup d k) with
+        |Some l -> l
+        |None -> [""] in 
+      let next = randomelement values in 
+        if (next = ".") then (s ^ ".") 
+        else (helper (b,next) d (s ^ " " ^ next)) in
+    a ^ " " ^ b ^ (helper k d "")
+      
 ;;
 end
