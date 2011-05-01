@@ -98,7 +98,7 @@ module PoS =
     let randomsentence() =
       let v () = randomelement([["adverb"; "verb"]; ["verb"]]) in
       let n () = randomelement([["adjective"; "noun"]; ["noun"]]) in
-      let np () = randomelement([["determiner"] @ n()]) in
+      let np () = randomelement([["determiner"] @ n(); n()]) in
       let prepphrase () = randomelement([["preposition"] @ n()]) in
       let vp () = randomelement([v() @ np(); ["be"]@["adjective"]; v()]) in
       flatten(randomelement([[np() @ vp()]; [np() @ vp() @ prepphrase()]]));;
@@ -122,7 +122,7 @@ module PoS =
 	  else find_token tokens dict poslist in
           
       let helper key markov dict poslist sent =
-	let (a,b) = (find_token tokens dict poslist) in
+	let (a,b) = key in
     
 	let rec helper2 key markov dict poslist sent int =
 	  let (a,b) = key in
@@ -142,7 +142,7 @@ module PoS =
 	    if (next = ".") then (sent ^ ".")
 	    else (helper2 (b,next) markov dict poslist (sent^" "^next) 
 		    (int+1)) in
-	  a ^ " " ^ b ^ (helper2 key markov dict poslist sent 0) in
+	  a ^ " " ^ b ^ (helper2 key markov dict poslist sent 2) in
     
       let token = (find_token tokens dict poslist) in
 	helper token markov dict poslist ""  ;;    
