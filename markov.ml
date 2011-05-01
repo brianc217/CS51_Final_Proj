@@ -6,13 +6,13 @@ open Dict;;
 
 module MCB = 
   struct
-    module MarkovDict = Dict.Make(
+    module MarkovDict = Make(
       struct 
 	type key = (string * string)
 	type value = string list
 	let compare = (fun x y -> let (a,b) = x in
 		       let (c,d) = y in
-			 String.compare a c)
+			 String.compare (a^b) (c^d))
 	let string_of_key = (fun s -> let (a,b) = s in a^ " " ^b)
 	let string_of_value = (fun l ->
 				 let string_of_list l =
