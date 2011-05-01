@@ -1,6 +1,7 @@
 (* Signature for Markov Chain Babbler *)
 module type DICT = 
 sig
+  type word
   type key   
   type value 
   type dict
@@ -10,7 +11,8 @@ sig
   val member : dict -> key -> bool
   val read : string -> string list
   val make_dict: string list -> dict
-  val babble: key -> dict -> string
+  (*val babble: key -> dict -> string*)
+  
 end
 
 (* Map implementation of MCB *)
@@ -26,7 +28,8 @@ struct
         let y = match y with
 	  | (a,b) -> a^b in
 	String.compare x y
-    end) 
+    end)
+  type word = string
   type key = (string * string);; 
   type value = (string list) ;;
   type dict = value M.t ;;
@@ -91,15 +94,18 @@ struct
 	| [] -> dict in
       helper list dict
 ;;
-  let rec babble (k:key) (d:dict) : string = 
+
+  exception Not_in_dict
+
+  let rec babble k d (*(k:MCB.key) (d:MCB.dict)*) : string = 
     let (a,b) = k in
-    let rec helper (k:key) (d:dict) (s:string) : string =
+    let rec helper k d s (*(k:MCB.key) (d:MCB.dict) (s:string)*) : string =
       let (a,b) = k in
       let randomelement l = 
         List.nth l (Random.int(List.length l)) in
       let values = match (lookup d k) with
         |Some l -> l
-        |None -> [""] in 
+        |None -> raise Not_in_dict in 
       let next = randomelement values in 
         if (next = ".") then (s ^ ".") 
         else (helper (b,next) d (s ^ " " ^ next)) in
@@ -108,3 +114,5 @@ struct
 ;;
 
 end
+
+

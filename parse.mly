@@ -1,7 +1,0 @@
-
-%{
-open Ast
-%}
-
-%start program
-
