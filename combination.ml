@@ -83,7 +83,7 @@ module PoS =
 	      | anything_else -> helper t d)
 	| [] -> d
 	| _::[] -> raise (Failure "error in part of speech file")
-    in helper l PosDict.empty ;;
+    in good_insert (helper l PosDict.empty) "." ["EOS"] ;;
     
     (* A helper function that will flatten a list *)
     let rec flatten l : 'a list =
@@ -96,12 +96,15 @@ module PoS =
       List.nth l (Random.int (List.length l)) ;;
 
     let randomsentence() =
-      let v () = randomelement([["adverb"; "verb"]; ["verb"]]) in
-      let n () = randomelement([["adjective"; "noun"]; ["noun"]]) in
-      let np () = randomelement([["determiner"] @ n(); n()]) in
+      let v () = randomelement([["adverb"; "verb"]; ["verb"];
+		["verb";"adverb"]]) in
+      let n () = randomelement([["adjective"; "noun"]; ["noun"]; 
+		["pronoun"];["noun";"conjunction";"noun"]]) in
+      let np () = randomelement([["determiner"] @ n(); n();["article"]@n()]) in
       let prepphrase () = randomelement([["preposition"] @ n()]) in
       let vp () = randomelement([v() @ np(); ["be"]@["adjective"]; v()]) in
-      flatten(randomelement([[np() @ vp()]; [np() @ vp() @ prepphrase()]]));;
+      flatten(randomelement([[np() @ vp() @ ["EOS"]]; [np() @ vp() @ 
+		prepphrase() @ ["EOS"]]]));;
 
     exception Not_in_dict;;
 
@@ -113,12 +116,13 @@ module PoS =
 	  | None -> []
 	  | Some l -> l in
   
+      (* Token list is actually reversed for efficiency in MCB.read function *)
       let rec find_token tokens dict poslist =
 	let token = Array.get tokens (Random.int (Array.length tokens)) in
-	let (a,b) = token in
+	let (b,a) = token in
 	  if (List.mem (List.nth poslist 0) (deopt (PosDict.lookup dict a))) && 
 	    (List.mem (List.nth poslist 1) (deopt (PosDict.lookup dict b))) 
-	  then token
+	  then (a,b)
 	  else find_token tokens dict poslist in
           
       let helper key markov dict poslist sent =
@@ -126,7 +130,7 @@ module PoS =
     
 	let rec helper2 key markov dict poslist sent int =
 	  let (a,b) = key in
-	  if int >= List.length poslist then sent else
+	  if int >= List.length poslist then (MCB.babble key markov sent) else
 	  let values = match (MCB.MarkovDict.lookup markov key) with
 	    | None -> raise Not_in_dict
 	    | Some l -> l in
@@ -142,7 +146,8 @@ module PoS =
 	    if (next = ".") then (sent ^ ".")
 	    else (helper2 (b,next) markov dict poslist (sent^" "^next) 
 		    (int+1)) in
-	  a ^ " " ^ b ^ (helper2 key markov dict poslist sent 2) in
+	  (String.capitalize a) ^ " " ^ b ^ (helper2 key markov dict poslist 
+		sent 2) in
     
       let token = (find_token tokens dict poslist) in
 	helper token markov dict poslist ""  ;;    

@@ -35,9 +35,9 @@ module MCB =
 			(begin 
 			   match word with
 			     | "" -> helper "" list
-			     | word -> helper "" (list@[word])
+			     | word -> helper "" (word::list)
 			 end)
-		    | '.' -> helper "" (list@[word]@["."])
+		    | '.' | '!' | '?' -> helper "" ("."::word::list)
 		    | c -> helper (word^ String.make 1 c) list 
 		end
             | None -> list in
@@ -59,17 +59,21 @@ module MCB =
 
     let good_insert d k v = 
       match MarkovDict.lookup d k with
-	| Some l -> MarkovDict.insert d k (l@v)
-	| None -> MarkovDict.insert d k v ;;
+	| Some l -> MarkovDict.insert d k (v::l)
+	| None -> MarkovDict.insert d k [v] ;;
+    
+    exception Never_happens;;
 
     let make_dict (list:string list) : MarkovDict.dict = 
       let dict = MarkovDict.empty in
       let rec helper list dict =
 	match list with
-          | hd1::hd2::hd3::tl -> helper (hd2::hd3::tl) 
-	    (good_insert dict (hd1,hd2) [hd3])
-          | hd1::hd2::tl -> good_insert dict (hd1,hd2) tl
-	  | [] -> dict in
+          | hd1::hd2::hd3::hd4::tl -> helper (hd2::hd3::hd4::tl) (good_insert
+		dict (hd3,hd2) hd1)
+	  | hd1::hd2::hd3::tl -> (good_insert dict (hd3,hd2) hd1)
+          | hd1::hd2::tl -> raise Never_happens
+	  | hd::tl -> raise Never_happens
+	  | [] -> raise Never_happens in
 	helper list dict ;;
 
     exception Not_in_dict;;
