@@ -2,34 +2,6 @@ open Markov;;
 open Combination;;
 open Cfg;;
 
-<<<<<<< HEAD
-let main () =
-  (*match MCB.MarkovDict.lookup (MCB.make_dict (MCB.read "constitution.txt")) ("the","President") with
-    | None -> Pervasives.print_string "Zero"
-    | Some l -> print_string (List.fold_left (fun hd agg -> hd^ " " ^agg) "" l)
-  *)
-  let list = (*(MCB.read "alice.txt")@*)(MCB.read "constitution.txt") in
-  let tokens = MCB.key_array list in
-  let markovd = MCB.make_dict list in
-(*print_string (List.fold_left (fun hd agg -> hd^ " " ^agg) "" list);;*)
-  let posd = PoS.make_dict (PoS.read "newerpos.txt") in
-  (*let poslist = PoS.randomsentence () in*)
-  let print_list l = print_string ((List.fold_left (fun hd agg -> hd^ " " ^agg) "" l)^ "\n") in
-    (*print_list poslist;*)
-    match (PoS.PosDict.lookup posd "and") with 
-      | None -> print_string "Zero"
-      | Some l -> print_list l ;
-    print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-    print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");
-print_string ((PoS.babble tokens markovd posd ) ^ "\n");;
-
-main();;
-=======
 let rec cfg () =
   let instructions = "\nPress 'r' for a random sentence, and 'm' to go back to the main menu.\n" 
   in
@@ -106,4 +78,3 @@ let main () =
 
 
 main ();;
->>>>>>> c4750b69a98ca85037fff34ae652c0947d4f31df
