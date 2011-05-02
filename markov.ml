@@ -93,6 +93,12 @@ module MCB =
           else (helper (b,next) d (s ^ " " ^ next)) in
 	a ^ " " ^ b ^ (helper k d "") ;;
 
+   let const = (read "constitution.txt");;
+    let alice = (read "alice.txt");;
+    let const_dict = make_dict const;;
+    let alice_dict = make_dict const;;
+
+
 end
 
 

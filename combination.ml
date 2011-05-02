@@ -152,6 +152,11 @@ module PoS =
       let token = (find_token tokens dict poslist) in
 	helper token markov dict poslist ""  ;;    
 
+
+    let posdict = make_dict (read "newpos.txt");;
+    let const_tokens = MCB.key_array MCB.const;;
+    let alice_tokens = MCB.key_array MCB.alice;;
+
 end
 
 
